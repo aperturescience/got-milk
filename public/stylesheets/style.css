@@ -67,6 +67,8 @@ h1 {
   left: 50%;
   top: 50%;
 
+  margin-top: 40px;
+
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
 
@@ -142,6 +144,8 @@ h1 {
 .the-milky-wave {
   width: 100%;
   height: 15px;
+
+  top: 1px;
 
   -webkit-mask: url(../images/milky_wave.svg) top left / cover;
   -webkit-mask-repeat: repeat-x;
