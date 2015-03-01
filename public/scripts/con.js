@@ -1,18 +1,66 @@
-var source = new EventSource('http://gilles.local:3001/stream');
+'use strict';
+
+var source = new window.EventSource('http://gilles.local:3001/stream');
 
 source.onmessage = function(e) {
   parseMessage(e);
 };
 
 function parseMessage(e) {
-  var data = e.data;
+  printLn('data: ' + e.data);
 
-  printLn('data: ' + data);
+  var data = JSON.parse(e.data);
+
+  // check for data type
+  switch(data.device) {
+    case 'scale':
+      parseScaleValues(data);
+      break;
+    case 'light_sensor':
+      parseLightValues(data);
+      break;
+    case 'temp_sensor':
+      parseTemperatureValues(data);
+  }
+
+}
+
+function parseScaleValues(data) {
+
+  var weight = data.weight;
 
   // convert to percentage, change milk values
-  var pct = data / 10;
+  var pct = weight / 10;
 
   updateMilk(pct);
+}
+
+function parseLightValues(data) {
+
+  var lum = data.luminosity;
+
+  // fridge is closed
+  if (lum > 100)
+    $('.fridge')
+      .removeClass('closed');
+  else
+    $('.fridge')
+      .addClass('closed');
+}
+
+function parseTemperatureValues(data) {
+  var temp = data.temperature;
+
+  // fridge is closed
+  if (temp > 10)
+    $('.fridge')
+      .addClass('hot');
+  else
+    $('.fridge')
+      .removeClass('hot');
+
+  $('.temperature')
+    .html(temp + '°C');
 }
 
 // Print a message to the debug console
@@ -60,7 +108,7 @@ function updateMilk(val) {
   milk.css('height', visualVal + '%');
 
   // update percentage value
-  pct.html(Math.floor(val) + '%');
+  pct.html(Math.round(val) + '%');
 
   // update expression
   bottle.removeClass(expressions.join(' '));
